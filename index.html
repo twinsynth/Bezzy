@@ -143,25 +143,32 @@
     let timeLeft = 60;
     let timer;
 
-    // 🎯 Ensure points stay within a safe area
-    function getSafeRandom(min, max) {
-        return Math.random() * (max - min) + min;
-    }
+   // 🎯 Ensure points stay within a safe area
+function getSafeRandom(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
-    function randomizePoints(count) {
-        points = [];
-        const safeWidth = canvas.width * (1 - 2 * margin);
-        const safeHeight = canvas.height * (1 - 2 * margin);
-        const xOffset = canvas.width * margin;
-        const yOffset = canvas.height * margin;
+function isMobile() {
+    return window.innerWidth <= 768; // Adjust threshold for tablets if needed
+}
 
-        for (let i = 0; i < count; i++) {
-            points.push({
-                x: getSafeRandom(xOffset, xOffset + safeWidth),
-                y: getSafeRandom(yOffset, yOffset + safeHeight),
-            });
-        }
+function randomizePoints(count) {
+    points = [];
+    
+    let safeMargin = isMobile() ? 0.15 : 0.1; // Increase margin for mobile screens
+    const safeWidth = canvas.width * (1 - 2 * safeMargin);
+    const safeHeight = canvas.height * (1 - 2 * safeMargin);
+    const xOffset = canvas.width * safeMargin;
+    const yOffset = canvas.height * safeMargin;
+
+    for (let i = 0; i < count; i++) {
+        points.push({
+            x: getSafeRandom(xOffset, xOffset + safeWidth),
+            y: getSafeRandom(yOffset, yOffset + safeHeight),
+        });
     }
+}
+
 
     // 📏 Calculate straightness %
     function calculateStraightness() {
@@ -185,6 +192,31 @@
     // 🔥 Force 100% when straightness is 96% or higher
     return straightness >= 99 ? 100 : Math.round(straightness);
 }
+
+
+
+
+
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    randomizePoints(12); // Re-randomize points for new screen size
+    drawCurve();
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas(); // Call once on page load
+
+
+
+
+
+
+
+
+
+
 
 
    // 🖌️ Draw the Bézier curve & points
