@@ -63,6 +63,22 @@ document.addEventListener('DOMContentLoaded', () => {
   `;
   document.body.appendChild(clearedOverlay);
 
+document.getElementById("nextLevelButton").onclick = () => {
+  clearedOverlay.style.display = "none";
+  const timeBonus = 60 - timeLeft;
+  score += 100 + timeBonus;
+  stage++;
+  timeLeft = 60;
+  updateUI();
+  randomizePoints(12);
+  draggedPointIndex = null;
+  startTimer();
+  drawCurve();
+};
+
+
+  
+
   canvas.style.width = "100vw";
   canvas.style.height = "100vh";
   canvas.width = canvas.offsetWidth;
