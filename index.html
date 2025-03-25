@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bézzy Game</title>
+  <title>The Bézzy Game</title>
 
 <style>
   @font-face {
@@ -35,6 +35,38 @@
     cursor: pointer;
   }
 
+
+
+#startOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  color: white;
+}
+
+#startTitle {
+  font-size: 38.4px; /* 32px × 1.2 (20% larger than GAME OVER) */
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+
+
+
+  
+
+
+
+
+  
+
   #startButton, #restartButton, #overlayRestart {
     position: fixed;
     z-index: 1001;
@@ -52,12 +84,12 @@
   }
 
   #overlayRestart {
-    margin-top: 128px;
+    margin-top: 200px;
   }
 
   #startButton img {
-    width: 256px;
-    height: 256px;
+    width: 100px;
+    height: 100px;
   }
 
   #restartButton img {
@@ -66,8 +98,8 @@
   }
 
   #overlayRestart img {
-    width: 96px;
-    height: 96px;
+    width: 100px;
+    height: 100px;
   }
 
   #startButton:hover img,
@@ -96,9 +128,13 @@
 <body>
   <div id="ui">Stage: <span id="stage">1</span> | Score: <span id="score">0</span> | Straightness: <span id="straightness">0%</span></div>
 
+ <div id="startOverlay">
+  <p id="startTitle">The Bézzy Game</p>
   <button id="startButton">
     <img src="assets/Play.svg" alt="Play">
   </button>
+</div>
+
 
   <button id="restartButton">
     <img src="assets/Restart.svg" alt="Restart">
@@ -314,7 +350,7 @@
       function startGame() {
         gameOverOverlay.style.display = "none";
         clearedOverlay.style.display = "none";
-        startButton.style.display = "none";
+        document.getElementById("startOverlay").style.display = "none";
         stage = 1;
         score = 0;
         timeLeft = 60;
