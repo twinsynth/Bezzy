@@ -2,9 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Bézzy Game</title>
-  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/main.css">
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      color: white;
+      font-family: 'Coolvetica', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    #mainTitle {
+      font-size: 48px;
+      margin-bottom: 48px;
+    }
+
+    #gameModes {
+      display: grid;
+      gap: 20px;
+    }
+
+    .game-button {
+      display: block;
+      text-align: center;
+      background: white;
+      color: black;
+      font-size: 20px;
+      font-weight: bold;
+      padding: 16px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      border: none;
+      width: 200px;
+    }
+
+    .game-button.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
   <div id="menu">
