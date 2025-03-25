@@ -19,21 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   timerDisplay.textContent = "60";
   document.body.appendChild(timerDisplay);
 
-
-// Create Home Button
-const homeButton = document.createElement("button");
-homeButton.id = "homeButton";
-homeButton.innerHTML = `<img src="../assets/Home.svg" alt="Home">`;
-homeButton.onclick = () => window.location.href = "../index.html";
-document.body.appendChild(homeButton);
-
-// Apply ID for timer styling
-timerDisplay.id = "timerDisplay";
-
-
-
-  
-
   const gameOverOverlay = document.createElement("div");
   gameOverOverlay.style.position = "fixed";
   gameOverOverlay.style.top = "0";
@@ -57,72 +42,26 @@ timerDisplay.id = "timerDisplay";
   document.body.appendChild(gameOverOverlay);
 
   const clearedOverlay = document.createElement("div");
-clearedOverlay.style.position = "fixed";
-clearedOverlay.style.top = "0";
-clearedOverlay.style.left = "0";
-clearedOverlay.style.width = "100%";
-clearedOverlay.style.height = "100%";
-clearedOverlay.style.background = "rgba(0, 128, 0, 0.8)";
-clearedOverlay.style.display = "none";
-clearedOverlay.style.justifyContent = "center";
-clearedOverlay.style.alignItems = "center";
-clearedOverlay.style.flexDirection = "column";
-clearedOverlay.style.color = "white";
-clearedOverlay.style.fontSize = "32px";
-clearedOverlay.style.fontWeight = "bold";
-
-// Add animated score counter above "CLEARED!"
-const scoreCounter = document.createElement("p");
-scoreCounter.style.fontSize = "64px"; // 2x size of CLEARED!
-scoreCounter.style.marginBottom = "20px"; // margin for some spacing
-clearedOverlay.appendChild(scoreCounter);
-
-const clearedText = document.createElement("p");
-clearedText.textContent = "CLEARED!";
-clearedOverlay.appendChild(clearedText);
-
-const nextLevelButton = document.createElement("button");
-nextLevelButton.innerHTML = `<img src="../assets/Next.svg" alt="Next">`;
-clearedOverlay.appendChild(nextLevelButton);
-document.body.appendChild(clearedOverlay);
-
-// Function to animate score from current score to new score
-function animateScoreCounter(currentScore, newScore) {
-  let startTime = Date.now();
-  let duration = 2000; // 2 seconds animation time
-  let initialScore = currentScore;
-  
-  const interval = setInterval(() => {
-    const elapsedTime = Date.now() - startTime;
-    if (elapsedTime >= duration) {
-      scoreCounter.textContent = newScore;
-      clearInterval(interval); // Stop the animation
-    } else {
-      const progress = elapsedTime / duration;
-      const currentDisplayScore = Math.floor(initialScore + (newScore - initialScore) * progress);
-      scoreCounter.textContent = currentDisplayScore;
-    }
-  }, 16); // ~60 FPS
-}
-
-document.getElementById("nextLevelButton").onclick = () => {
+  clearedOverlay.style.position = "fixed";
+  clearedOverlay.style.top = "0";
+  clearedOverlay.style.left = "0";
+  clearedOverlay.style.width = "100%";
+  clearedOverlay.style.height = "100%";
+  clearedOverlay.style.background = "rgba(0, 128, 0, 0.8)";
   clearedOverlay.style.display = "none";
-  const timeBonus = 60 - timeLeft;
-  score += 100 + timeBonus; // Update the score
-  stage++;
-  timeLeft = 60;
-  updateUI();
-  randomizePoints(12);
-  draggedPointIndex = null;
-  startTimer();
-  drawCurve();
-  
-  animateScoreCounter(score - (100 + timeBonus), score); // Animate the score from current to new score
-};
-
-
-
-  
+  clearedOverlay.style.justifyContent = "center";
+  clearedOverlay.style.alignItems = "center";
+  clearedOverlay.style.flexDirection = "column";
+  clearedOverlay.style.color = "white";
+  clearedOverlay.style.fontSize = "32px";
+  clearedOverlay.style.fontWeight = "bold";
+  clearedOverlay.innerHTML = `
+    <p>CLEARED!</p>
+    <button id="nextLevelButton">
+      <img src="../assets/Next.svg" alt="Next">
+    </button>
+  `;
+  document.body.appendChild(clearedOverlay);
 
   canvas.style.width = "100vw";
   canvas.style.height = "100vh";
