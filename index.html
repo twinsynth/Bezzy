@@ -3,87 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bézier Curve Game</title>
+  <title>Bézzy Game</title>
 
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: #222;
-      font-family: Arial, sans-serif;
-    }
+<style>
+  @font-face {
+    font-family: 'Coolvetica';
+    src: url('assets/Coolvetica Rg.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
 
-    canvas {
-      display: block;
-      background: #333;
-      cursor: crosshair;
-    }
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #222;
+    font-family: 'Coolvetica', sans-serif;
+  }
 
-    button, #startButton, #restartButton, #overlayRestart {
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-      background: transparent;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-    }
+  canvas {
+    display: block;
+    background: #333;
+    cursor: crosshair;
+  }
 
-    #startButton, #restartButton, #overlayRestart {
-      position: fixed;
-      z-index: 1001;
-    }
+  button, #startButton, #restartButton, #overlayRestart {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
 
-    #startButton {
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+  #startButton, #restartButton, #overlayRestart {
+    position: fixed;
+    z-index: 1001;
+  }
 
-    #restartButton {
-      top: 20px;
-      right: 20px;
-    }
+  #startButton {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 
-    #overlayRestart {
-      margin-top: 128px;
-    }
+  #restartButton {
+    top: 20px;
+    right: 20px;
+  }
 
-    #startButton img {
-      width: 256px;
-      height: 256px;
-    }
+  #overlayRestart {
+    margin-top: 128px;
+  }
 
-    #restartButton img {
-      width: 42px;
-      height: 42px;
-    }
+  #startButton img {
+    width: 256px;
+    height: 256px;
+  }
 
-    #overlayRestart img {
-      width: 96px;
-      height: 96px;
-    }
+  #restartButton img {
+    width: 42px;
+    height: 42px;
+  }
 
-    #startButton:hover img,
-    #restartButton:hover img,
-    #overlayRestart:hover img {
-      filter: invert(100%);
-    }
+  #overlayRestart img {
+    width: 96px;
+    height: 96px;
+  }
 
-    #startButton:active img,
-    #restartButton:active img,
-    #overlayRestart:active img {
-      filter: invert(80%);
-    }
+  #startButton:hover img,
+  #restartButton:hover img,
+  #overlayRestart:hover img {
+    filter: invert(100%);
+  }
 
-    #ui {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      color: white;
-      font-size: 18px;
-      z-index: 1000;
-    }
-  </style>
+  #startButton:active img,
+  #restartButton:active img,
+  #overlayRestart:active img {
+    filter: invert(80%);
+  }
+
+  #ui {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-size: 18px;
+    z-index: 1000;
+  }
+</style>
+
 </head>
 <body>
   <div id="ui">Stage: <span id="stage">1</span> | Score: <span id="score">0</span> | Straightness: <span id="straightness">0%</span></div>
