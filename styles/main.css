@@ -1,0 +1,103 @@
+@font-face {
+  font-family: 'Coolvetica';
+  src: url('../assets/Coolvetica Rg.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #222;
+  font-family: 'Coolvetica', sans-serif;
+}
+
+canvas {
+  display: block;
+  background: #333;
+  cursor: crosshair;
+}
+
+button, #restartButton, #overlayRestart, #nextLevelButton {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+#startOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  color: white;
+  background: rgba(0, 0, 0, 0.8);
+  font-size: 38.4px;
+  font-weight: bold;
+}
+
+#startTitle {
+  font-size: 38.4px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+#startButton {
+  margin-top: 24px;
+  position: relative;
+}
+
+#restartButton, #overlayRestart {
+  position: fixed;
+  z-index: 1001;
+}
+
+#restartButton {
+  top: 20px;
+  right: 20px;
+}
+
+#overlayRestart {
+  margin-top: 200px;
+}
+
+#startButton img,
+#overlayRestart img,
+#nextLevelButton img {
+  width: 100px;
+  height: 100px;
+}
+
+#restartButton img {
+  width: 42px;
+  height: 42px;
+}
+
+button img {
+  transition: filter 0.2s ease;
+}
+
+button:hover img {
+  filter: invert(100%);
+}
+
+button:active img {
+  filter: invert(80%);
+}
+
+#ui {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 18px;
+  z-index: 1000;
+}
