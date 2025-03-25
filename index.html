@@ -8,355 +8,266 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: #f0f0f0;
+      background: #222;
       font-family: Arial, sans-serif;
     }
     canvas {
       display: block;
-      background: white;
+      background: #333;
       cursor: crosshair;
     }
-    #startButton {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    button, #startButton, #restartButton {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    #startButton, #restartButton {
+      position: fixed;
       padding: 15px 30px;
       font-size: 24px;
       font-weight: bold;
-      color: black;
       background: white;
+      color: black;
       border: 2px solid black;
       border-radius: 5px;
       cursor: pointer;
-      text-transform: uppercase;
       transition: all 0.3s ease;
+      z-index: 1001;
     }
-    #startButton:hover {
-      color: white;
+    #startButton {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #restartButton {
+      top: 10px;
+      right: 10px;
+      font-size: 16px;
+    }
+    #startButton:hover, #restartButton:hover {
       background: black;
+      color: white;
     }
     #ui {
       position: fixed;
       top: 10px;
       left: 10px;
-      color: black;
+      color: white;
       font-size: 18px;
       z-index: 1000;
-    }
-    #restartButton {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      padding: 10px 15px;
-      background: white;
-      color: black;
-      border: 2px solid black;
-      border-radius: 5px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    #restartButton:hover {
-      background: black;
-      color: white;
     }
   </style>
 </head>
 <body>
-  <div id="startButton">Start!</div>
+  <button id="startButton">Start!</button>
   <div id="ui">Stage: <span id="stage">1</span> | Score: <span id="score">0</span> | Straightness: <span id="straightness">0%</span></div>
   <button id="restartButton">Restart</button>
   <canvas id="curveEditor"></canvas>
- <script>
-    const canvas = document.getElementById('curveEditor');
-    const ctx = canvas.getContext('2d');
-    const startButton = document.getElementById('startButton');
-    const restartButton = document.getElementById('restartButton');
-    const stageDisplay = document.getElementById('stage');
-    const scoreDisplay = document.getElementById('score');
-    const straightnessDisplay = document.getElementById('straightness');
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById('curveEditor');
+      const ctx = canvas.getContext('2d');
+      const startButton = document.getElementById('startButton');
+      const restartButton = document.getElementById('restartButton');
+      const stageDisplay = document.getElementById('stage');
+      const scoreDisplay = document.getElementById('score');
+      const straightnessDisplay = document.getElementById('straightness');
 
-    // 🕐 Timer Display
-    const timerDisplay = document.createElement("div");
-    timerDisplay.style.position = "fixed";
-    timerDisplay.style.bottom = "10px";
-    timerDisplay.style.left = "50%";
-    timerDisplay.style.transform = "translateX(-50%)";
-    timerDisplay.style.color = "white";
-    timerDisplay.style.fontSize = "18px";
-    timerDisplay.style.fontWeight = "bold";
-    timerDisplay.style.zIndex = "1000";
-    timerDisplay.textContent = "60";
-    document.body.appendChild(timerDisplay);
+      const timerDisplay = document.createElement("div");
+      timerDisplay.style.position = "fixed";
+      timerDisplay.style.bottom = "10px";
+      timerDisplay.style.left = "50%";
+      timerDisplay.style.transform = "translateX(-50%)";
+      timerDisplay.style.color = "white";
+      timerDisplay.style.fontSize = "18px";
+      timerDisplay.style.fontWeight = "bold";
+      timerDisplay.style.zIndex = "1000";
+      timerDisplay.textContent = "60";
+      document.body.appendChild(timerDisplay);
 
-    // 🎭 Game Over Overlay
-    const gameOverOverlay = document.createElement("div");
-    gameOverOverlay.style.position = "fixed";
-    gameOverOverlay.style.top = "0";
-    gameOverOverlay.style.left = "0";
-    gameOverOverlay.style.width = "100%";
-    gameOverOverlay.style.height = "100%";
-    gameOverOverlay.style.background = "rgba(0, 0, 0, 0.8)";
-    gameOverOverlay.style.display = "none";
-    gameOverOverlay.style.justifyContent = "center";
-    gameOverOverlay.style.alignItems = "center";
-    gameOverOverlay.style.flexDirection = "column";
-    gameOverOverlay.style.color = "white";
-    gameOverOverlay.style.fontSize = "32px";
-    gameOverOverlay.style.fontWeight = "bold";
-    gameOverOverlay.innerHTML = `
+      const gameOverOverlay = document.createElement("div");
+      gameOverOverlay.style.position = "fixed";
+      gameOverOverlay.style.top = "0";
+      gameOverOverlay.style.left = "0";
+      gameOverOverlay.style.width = "100%";
+      gameOverOverlay.style.height = "100%";
+      gameOverOverlay.style.background = "rgba(0, 0, 0, 0.8)";
+      gameOverOverlay.style.display = "none";
+      gameOverOverlay.style.justifyContent = "center";
+      gameOverOverlay.style.alignItems = "center";
+      gameOverOverlay.style.flexDirection = "column";
+      gameOverOverlay.style.color = "white";
+      gameOverOverlay.style.fontSize = "32px";
+      gameOverOverlay.style.fontWeight = "bold";
+      gameOverOverlay.innerHTML = `
         <p>GAME OVER</p>
-        <button id="overlayRestart" style="
-            padding: 15px 30px;
-            font-size: 24px;
-            font-weight: bold;
-            background: white;
-            color: black;
-            border: 2px solid black;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        ">Restart</button>
-    `;
-    document.body.appendChild(gameOverOverlay);
+        <button id="overlayRestart" style="padding: 15px 30px; font-size: 24px; font-weight: bold; background: white; color: black; border: 2px solid black; border-radius: 5px; cursor: pointer; margin-top: 10px;">Restart</button>
+      `;
+      document.body.appendChild(gameOverOverlay);
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+      const clearedOverlay = document.createElement("div");
+      clearedOverlay.style.position = "fixed";
+      clearedOverlay.style.top = "0";
+      clearedOverlay.style.left = "0";
+      clearedOverlay.style.width = "100%";
+      clearedOverlay.style.height = "100%";
+      clearedOverlay.style.background = "rgba(0, 128, 0, 0.8)";
+      clearedOverlay.style.display = "none";
+      clearedOverlay.style.justifyContent = "center";
+      clearedOverlay.style.alignItems = "center";
+      clearedOverlay.style.flexDirection = "column";
+      clearedOverlay.style.color = "white";
+      clearedOverlay.style.fontSize = "32px";
+      clearedOverlay.style.fontWeight = "bold";
+      clearedOverlay.innerHTML = `
+        <p>CLEARED!</p>
+        <button id="nextLevelButton" style="padding: 15px 30px; font-size: 24px; font-weight: bold; background: white; color: black; border: 2px solid black; border-radius: 5px; cursor: pointer; margin-top: 10px;">Next Level</button>
+      `;
+      document.body.appendChild(clearedOverlay);
 
-    // 🌙 Apply Béziere Phy Design
-    document.body.style.background = "#222";
-    canvas.style.background = "#333";
-    document.getElementById("ui").style.color = "white";
-    restartButton.style.color = "white";
-    restartButton.style.background = "#444";
-    restartButton.style.border = "2px solid white";
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
-    const radius = 8;
-    const touchRadius = 15;
-    const margin = 0.1;
-    let points = [];
-    let stage = 1;
-    let score = 0;
-    let draggedPointIndex = null;
-    let timeLeft = 60;
-    let timer;
+      const radius = 8;
+      const touchRadius = 15;
+      let points = [], stage = 1, score = 0, draggedPointIndex = null, timeLeft = 60, timer;
 
-   // 🎯 Ensure points stay within a safe area
-function getSafeRandom(min, max) {
-    return Math.random() * (max - min) + min;
-}
+      function getSafeRandom(min, max) {
+        return Math.random() * (max - min) + min;
+      }
 
-function isMobile() {
-    return window.innerWidth <= 768; // Adjust threshold for tablets if needed
-}
+      function isMobile() {
+        return window.innerWidth <= 768;
+      }
 
-function randomizePoints(count) {
-    points = [];
-    
-    let safeMargin = isMobile() ? 0.15 : 0.1; // Increase margin for mobile screens
-    const safeWidth = canvas.width * (1 - 2 * safeMargin);
-    const safeHeight = canvas.height * (1 - 2 * safeMargin);
-    const xOffset = canvas.width * safeMargin;
-    const yOffset = canvas.height * safeMargin;
+      function randomizePoints(count) {
+        points = [];
+        const safeMargin = isMobile() ? 0.15 : 0.1;
+        const safeWidth = canvas.width * (1 - 2 * safeMargin);
+        const safeHeight = canvas.height * (1 - 2 * safeMargin);
+        const xOffset = canvas.width * safeMargin;
+        const yOffset = canvas.height * safeMargin;
 
-    for (let i = 0; i < count; i++) {
-        points.push({
+        for (let i = 0; i < count; i++) {
+          points.push({
             x: getSafeRandom(xOffset, xOffset + safeWidth),
             y: getSafeRandom(yOffset, yOffset + safeHeight),
-        });
-    }
-}
-
-
-    // 📏 Calculate straightness %
-    function calculateStraightness() {
-    if (points.length < 2) return 100;
-
-    let totalDistance = 0;
-    let straightLineDistance = 0;
-
-    for (let i = 0; i < points.length - 1; i++) {
-        const dx = points[i + 1].x - points[i].x;
-        const dy = points[i + 1].y - points[i].y;
-        totalDistance += Math.sqrt(dx ** 2 + dy ** 2);
-    }
-
-    const dx = points[points.length - 1].x - points[0].x;
-    const dy = points[points.length - 1].y - points[0].y;
-    straightLineDistance = Math.sqrt(dx ** 2 + dy ** 2);
-
-    let straightness = (straightLineDistance / totalDistance) * 100;
-
-    // 🔥 Force 100% when straightness is 96% or higher
-    return straightness >= 99 ? 100 : Math.round(straightness);
-}
-
-
-
-
-
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    randomizePoints(12); // Re-randomize points for new screen size
-    drawCurve();
-}
-
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas(); // Call once on page load
-
-
-
-
-
-
-
-
-
-
-
-
-   // 🖌️ Draw the Bézier curve & points
-function drawCurve() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw control lines
-    ctx.beginPath();
-    ctx.strokeStyle = '#aaa';
-    points.forEach((point, i) => {
-        if (i > 0) {
-            ctx.moveTo(points[i - 1].x, points[i - 1].y);
-            ctx.lineTo(point.x, point.y);
+          });
         }
-    });
-    ctx.stroke();
+      }
 
-    // Draw the Bézier curve
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
+      function calculateStraightness() {
+        if (points.length < 2) return 100;
+        let totalDistance = 0;
+        for (let i = 0; i < points.length - 1; i++) {
+          const dx = points[i + 1].x - points[i].x;
+          const dy = points[i + 1].y - points[i].y;
+          totalDistance += Math.hypot(dx, dy);
+        }
+        const dx = points[points.length - 1].x - points[0].x;
+        const dy = points[points.length - 1].y - points[0].y;
+        const straightLineDistance = Math.hypot(dx, dy);
+        const straightness = (straightLineDistance / totalDistance) * 100;
+        return straightness >= 99 ? 100 : Math.round(straightness);
+      }
 
-    // Ensure the first segment is curved properly
-    if (points.length >= 4) {
-        ctx.bezierCurveTo(
-            points[0].x, points[0].y, // Mirror first point as control point
-            points[1].x, points[1].y, // Control point
-            points[2].x, points[2].y  // Endpoint
-        );
-    }
+      function drawCurve() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Continue drawing Bézier curves for the rest of the points
-    for (let i = 3; i < points.length - 2; i += 3) {
-        ctx.bezierCurveTo(
-            points[i].x, points[i].y,
-            points[i + 1].x, points[i + 1].y,
-            points[i + 2].x, points[i + 2].y
-        );
-    }
-
-    // Ensure the last two points are connected smoothly
-    if (points.length % 3 !== 1) {
-        let last = points.length - 1;
-        ctx.lineTo(points[last].x, points[last].y);
-    }
-
-    ctx.strokeStyle = '#007BFF'; // Ensure the curve is blue
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Draw the control points
-    points.forEach((point) => {
+        const maxOpacity = 1;
+        const fadePerLevel = 0.02;
+        const minOpacity = 0.02;
+        const currentOpacity = Math.max(maxOpacity - ((stage - 1) * fadePerLevel), minOpacity);
         ctx.beginPath();
-        ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = 'lightgray';
-        ctx.fill();
-    });
+        ctx.strokeStyle = `rgba(170, 170, 170, ${currentOpacity})`;
+        points.forEach((p, i) => {
+          if (i > 0) {
+            ctx.moveTo(points[i - 1].x, points[i - 1].y);
+            ctx.lineTo(p.x, p.y);
+          }
+        });
+        ctx.stroke();
 
-    // Update the straightness percentage
-    const straightness = calculateStraightness();
-    straightnessDisplay.textContent = `${straightness}%`;
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        if (points.length >= 4) {
+          ctx.bezierCurveTo(points[0].x, points[0].y, points[1].x, points[1].y, points[2].x, points[2].y);
+        }
+        for (let i = 3; i < points.length - 2; i += 3) {
+          ctx.bezierCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, points[i + 2].x, points[i + 2].y);
+        }
+        if (points.length % 3 !== 1) {
+          const last = points.length - 1;
+          ctx.lineTo(points[last].x, points[last].y);
+        }
+        ctx.strokeStyle = '#007BFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
 
-    // If straightness reaches 100%, update the game state
-    if (straightness === 100) {
-        score++;
-        stage++;
-        timeLeft = 60;
-        updateUI();
-        randomizePoints(12);
-        drawCurve();
-    }
-}
+        points.forEach((point) => {
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = 'lightgray';
+          ctx.fill();
+        });
 
+        const straightness = calculateStraightness();
+        straightnessDisplay.textContent = `${straightness}%`;
 
-    // 🕐 Start Timer
-    function startTimer() {
+        if (straightness === 100 && clearedOverlay.style.display === "none") {
+          clearInterval(timer);
+          clearedOverlay.style.display = "flex";
+        }
+      }
+
+      function startTimer() {
         timeLeft = 60;
         timerDisplay.textContent = timeLeft;
         clearInterval(timer);
         timer = setInterval(() => {
-            timeLeft--;
-            timerDisplay.textContent = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                gameOver();
-            }
+          timeLeft--;
+          timerDisplay.textContent = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            gameOver();
+          }
         }, 1000);
-    }
+      }
 
-    // 🎭 Game Over
-    function gameOver() {
+      function gameOver() {
         gameOverOverlay.style.display = "flex";
-    }
+      }
 
-    // 📊 Update UI
-    function updateUI() {
+      function updateUI() {
         stageDisplay.textContent = stage;
         scoreDisplay.textContent = score;
-    }
+      }
 
-    // 🖱️ Mouse & 📱 Touch Dragging (Fixed)
-    function getPointerPosition(event) {
-        if (event.touches) {
-            return { x: event.touches[0].clientX, y: event.touches[0].clientY };
-        }
-        return { x: event.clientX, y: event.clientY };
-    }
+      function getPointerPosition(event) {
+        return event.touches ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : { x: event.clientX, y: event.clientY };
+      }
 
-    function startDrag(event) {
+      function startDrag(event) {
         const rect = canvas.getBoundingClientRect();
         const { x, y } = getPointerPosition(event);
-        draggedPointIndex = points.findIndex(
-            (p) => Math.hypot(p.x - (x - rect.left), p.y - (y - rect.top)) < touchRadius
-        );
-    }
+        draggedPointIndex = points.findIndex((p) => Math.hypot(p.x - (x - rect.left), p.y - (y - rect.top)) < touchRadius);
+      }
 
-    function moveDrag(event) {
+      function moveDrag(event) {
         if (draggedPointIndex !== null) {
-            const rect = canvas.getBoundingClientRect();
-            const { x, y } = getPointerPosition(event);
-            points[draggedPointIndex] = {
-                x: x - rect.left,
-                y: y - rect.top,
-            };
-            drawCurve();
+          const rect = canvas.getBoundingClientRect();
+          const { x, y } = getPointerPosition(event);
+          points[draggedPointIndex] = { x: x - rect.left, y: y - rect.top };
+          drawCurve();
         }
-    }
+      }
 
-    function stopDrag() {
+      function stopDrag() {
         draggedPointIndex = null;
-    }
+      }
 
-    canvas.addEventListener('mousedown', startDrag);
-    canvas.addEventListener('mousemove', moveDrag);
-    canvas.addEventListener('mouseup', stopDrag);
-    canvas.addEventListener('touchstart', startDrag);
-    canvas.addEventListener('touchmove', moveDrag);
-    canvas.addEventListener('touchend', stopDrag);
-
-    function startGame() {
+      function startGame() {
         gameOverOverlay.style.display = "none";
+        clearedOverlay.style.display = "none";
         startButton.style.display = "none";
         stage = 1;
         score = 0;
@@ -365,18 +276,32 @@ function drawCurve() {
         randomizePoints(12);
         startTimer();
         drawCurve();
-    }
+      }
 
-    startButton.onclick = startGame;
-    restartButton.onclick = startGame;
-    document.getElementById("overlayRestart").onclick = startGame;
+      document.getElementById("nextLevelButton").onclick = () => {
+        clearedOverlay.style.display = "none";
+        const timeBonus = 60 - timeLeft;
+        score += 100 + timeBonus;
+        stage++;
+        timeLeft = 60;
+        updateUI();
+        randomizePoints(12);
+        draggedPointIndex = null;
+        startTimer();
+        drawCurve();
+      };
 
-</script>
+      startButton.onclick = startGame;
+      restartButton.onclick = startGame;
+      document.getElementById("overlayRestart").onclick = startGame;
 
-
-
-
-
-
+      canvas.addEventListener('mousedown', startDrag);
+      canvas.addEventListener('mousemove', moveDrag);
+      canvas.addEventListener('mouseup', stopDrag);
+      canvas.addEventListener('touchstart', startDrag, { passive: false });
+      canvas.addEventListener('touchmove', moveDrag, { passive: false });
+      canvas.addEventListener('touchend', stopDrag);
+    });
+  </script>
 </body>
 </html>
