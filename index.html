@@ -223,8 +223,13 @@
       `;
       document.body.appendChild(clearedOverlay);
 
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+     const scale = window.devicePixelRatio || 1;
+canvas.width = window.innerWidth * scale;
+canvas.height = window.innerHeight * scale;
+canvas.style.width = `${window.innerWidth}px`;
+canvas.style.height = `${window.innerHeight}px`;
+ctx.scale(scale, scale);
+
 
       const radius = 8;
       const touchRadius = 15;
