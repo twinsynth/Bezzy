@@ -71,12 +71,36 @@ document.addEventListener('DOMContentLoaded', () => {
    clearedOverlay.style.fontSize = "32px";
    clearedOverlay.style.fontWeight = "bold";
    clearedOverlay.innerHTML = `
+
+
+
+   <div id="scoreCounter" style="font-size: 48px; font-weight: bold; margin-bottom: 20px;">${score}</div>
+
      <p>CLEARED!</p>
      <button id="nextLevelButton">
        <img src="../assets/Next.svg" alt="Next">
      </button>
    `;
    document.body.appendChild(clearedOverlay);
+
+// Animate score when cleared
+let counter = score; // Get the current score
+const scoreElement = document.getElementById("scoreCounter");
+let start = performance.now();
+
+function animateScore() {
+  const progress = (performance.now() - start) / 2000; // 2-second animation
+  scoreElement.textContent = Math.floor(counter + progress * (score - counter));
+  if (progress < 1) {
+    requestAnimationFrame(animateScore);
+  }
+}
+
+animateScore();
+
+
+
+   
  
  document.getElementById("nextLevelButton").onclick = () => {
    clearedOverlay.style.display = "none";
