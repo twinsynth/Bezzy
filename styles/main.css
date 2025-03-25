@@ -95,9 +95,11 @@ button:active img {
 
 #ui {
   position: fixed;
-  top: 10px;
-  left: 10px;
+  bottom: 60px; /* space below the timer */
+  left: 50%;
+  transform: translateX(-50%);
   color: white;
   font-size: 18px;
   z-index: 1000;
+  text-align: center;
 }
