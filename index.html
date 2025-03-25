@@ -58,9 +58,15 @@
   </style>
 </head>
 <body>
-  <button id="startButton">Start!</button>
+  <button id="startButton">
+  <img src="assets/play.svg" alt="Play" style="width: 40px; height: 40px;">
+</button>
+
   <div id="ui">Stage: <span id="stage">1</span> | Score: <span id="score">0</span> | Straightness: <span id="straightness">0%</span></div>
-  <button id="restartButton">Restart</button>
+  <button id="restartButton">
+  <img src="assets/restart.svg" alt="Restart" style="width: 28px; height: 28px;">
+</button>
+
   <canvas id="curveEditor"></canvas>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
