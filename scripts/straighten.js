@@ -19,6 +19,21 @@ document.addEventListener('DOMContentLoaded', () => {
   timerDisplay.textContent = "60";
   document.body.appendChild(timerDisplay);
 
+
+// Create Home Button
+const homeButton = document.createElement("button");
+homeButton.id = "homeButton";
+homeButton.innerHTML = `<img src="../assets/Home.svg" alt="Home">`;
+homeButton.onclick = () => window.location.href = "../index.html";
+document.body.appendChild(homeButton);
+
+// Apply ID for timer styling
+timerDisplay.id = "timerDisplay";
+
+
+
+  
+
   const gameOverOverlay = document.createElement("div");
   gameOverOverlay.style.position = "fixed";
   gameOverOverlay.style.top = "0";
