@@ -5,116 +5,99 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bézier Curve Game</title>
 
-  
-  
-  
-<style>
-  body {
-    margin: 0;
-    overflow: hidden;
-    background: #222;
-    font-family: Arial, sans-serif;
-  }
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #222;
+      font-family: Arial, sans-serif;
+    }
 
-  canvas {
-    display: block;
-    background: #333;
-    cursor: crosshair;
-  }
+    canvas {
+      display: block;
+      background: #333;
+      cursor: crosshair;
+    }
 
-  button, #startButton, #restartButton, #overlayRestart {
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-  }
+    button, #startButton, #restartButton, #overlayRestart {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
 
-  #startButton, #restartButton, #overlayRestart {
-    position: fixed;
-    z-index: 1001;
-  }
+    #startButton, #restartButton, #overlayRestart {
+      position: fixed;
+      z-index: 1001;
+    }
 
-  #startButton {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+    #startButton {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
 
-  #restartButton {
-    top: 20px;
-    right: 20px;
-  }
+    #restartButton {
+      top: 20px;
+      right: 20px;
+    }
 
-  #overlayRestart {
-    margin-top: 128px; /* more spacing from GAME OVER */
-  }
+    #overlayRestart {
+      margin-top: 128px;
+    }
 
-  #startButton img {
-    width: 256px; /* bigger play button */
-    height: 256px;
-  }
+    #startButton img {
+      width: 256px;
+      height: 256px;
+    }
 
-  #restartButton img {
-    width: 42px;
-    height: 42px;
-  }
+    #restartButton img {
+      width: 42px;
+      height: 42px;
+    }
 
-  #overlayRestart img {
-    width: 96px;
-    height: 96px;
-  }
+    #overlayRestart img {
+      width: 96px;
+      height: 96px;
+    }
 
-  #startButton:hover img,
-  #restartButton:hover img,
-  #overlayRestart:hover img {
-    filter: invert(100%);
-  }
+    #startButton:hover img,
+    #restartButton:hover img,
+    #overlayRestart:hover img {
+      filter: invert(100%);
+    }
 
-  #startButton:active img,
-  #restartButton:active img,
-  #overlayRestart:active img {
-    filter: invert(80%);
-  }
+    #startButton:active img,
+    #restartButton:active img,
+    #overlayRestart:active img {
+      filter: invert(80%);
+    }
 
-  #ui {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    color: white;
-    font-size: 18px;
-    z-index: 1000;
-  }
-</style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+    #ui {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-size: 18px;
+      z-index: 1000;
+    }
+  </style>
 </head>
 <body>
-  
-
   <div id="ui">Stage: <span id="stage">1</span> | Score: <span id="score">0</span> | Straightness: <span id="straightness">0%</span></div>
- <button id="startButton">
-  <img src="assets/Play.svg" alt="Play">
-</button>
 
+  <button id="startButton">
+    <img src="assets/Play.svg" alt="Play">
+  </button>
+
+  <button id="restartButton">
+    <img src="assets/Restart.svg" alt="Restart">
+  </button>
 
   <canvas id="curveEditor"></canvas>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const canvas = document.getElementById('curveEditor');
@@ -151,13 +134,12 @@
       gameOverOverlay.style.color = "white";
       gameOverOverlay.style.fontSize = "32px";
       gameOverOverlay.style.fontWeight = "bold";
-     gameOverOverlay.innerHTML = `
-  <p>GAME OVER</p>
-  <button id="overlayRestart">
-    <img src="assets/Restart.svg" alt="Restart">
-  </button>
-`;
-
+      gameOverOverlay.innerHTML = `
+        <p>GAME OVER</p>
+        <button id="overlayRestart">
+          <img src="assets/Restart.svg" alt="Restart">
+        </button>
+      `;
       document.body.appendChild(gameOverOverlay);
 
       const clearedOverlay = document.createElement("div");
