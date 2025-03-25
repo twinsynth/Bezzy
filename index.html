@@ -8,7 +8,7 @@
   
   
   
- <style>
+<style>
   body {
     margin: 0;
     overflow: hidden;
@@ -48,12 +48,12 @@
   }
 
   #overlayRestart {
-    margin-top: 10px;
+    margin-top: 32px; /* more spacing from GAME OVER */
   }
 
   #startButton img {
-    width: 96px;
-    height: 96px;
+    width: 128px; /* bigger play button */
+    height: 128px;
   }
 
   #restartButton img {
@@ -68,11 +68,14 @@
 
   #startButton:hover img,
   #restartButton:hover img,
-  #overlayRestart:hover img,
+  #overlayRestart:hover img {
+    filter: invert(100%);
+  }
+
   #startButton:active img,
   #restartButton:active img,
   #overlayRestart:active img {
-    filter: invert(100%);
+    filter: invert(80%);
   }
 
   #ui {
@@ -84,6 +87,7 @@
     z-index: 1000;
   }
 </style>
+
 
 
 
