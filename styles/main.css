@@ -100,8 +100,8 @@ button:active img {
   transform: translateX(-50%);
   color: white;
   font-size: 18px;
-  z-index: 1000;
   text-align: center;
+  pointer-events: none;
 }
 
 #timerDisplay {
