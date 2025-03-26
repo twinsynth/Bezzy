@@ -35,27 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
   controls.style.gap = "10px";
   document.body.appendChild(controls);
 
-  const addBtn = document.createElement("button");
-  addBtn.textContent = "+";
-  addBtn.style.width = "40px";
-  addBtn.style.height = "40px";
-  addBtn.style.background = "black";
-  addBtn.style.color = "white";
-  addBtn.style.fontSize = "24px";
-  addBtn.style.fontWeight = "bold";
-  addBtn.onclick = () => {
-    if (points.length < 30) {
-      const last = points[points.length - 1];
-      const secondLast = points[points.length - 2];
-      const newPoint = {
-        x: (last.x + secondLast.x) / 2 + Math.random() * 30 - 15,
-        y: (last.y + secondLast.y) / 2 + Math.random() * 30 - 15
-      };
-      points.splice(points.length - 1, 0, newPoint);
-      drawCurve();
-    }
-  };
-
   const removeBtn = document.createElement("button");
   removeBtn.textContent = "-";
   removeBtn.style.width = "40px";
@@ -66,7 +45,30 @@ document.addEventListener('DOMContentLoaded', () => {
   removeBtn.style.fontWeight = "bold";
   removeBtn.onclick = () => {
     if (points.length > 3) {
-      points.splice(points.length - 2, 1);
+      points.splice(points.length - 3, 3);
+      drawCurve();
+    }
+  };
+
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "+";
+  addBtn.style.width = "40px";
+  addBtn.style.height = "40px";
+  addBtn.style.background = "black";
+  addBtn.style.color = "white";
+  addBtn.style.fontSize = "24px";
+  addBtn.style.fontWeight = "bold";
+  addBtn.onclick = () => {
+    if (points.length + 3 <= 60) {
+      for (let i = 0; i < 3; i++) {
+        const last = points[points.length - 1];
+        const secondLast = points[points.length - 2];
+        const newPoint = {
+          x: (last.x + secondLast.x) / 2 + Math.random() * 30 - 15,
+          y: (last.y + secondLast.y) / 2 + Math.random() * 30 - 15
+        };
+        points.splice(points.length - 1, 0, newPoint);
+      }
       drawCurve();
     }
   };
@@ -109,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.stroke();
 
     // Blue Bézier curve
-    if (points.length >= 2) {
+    if (points.length >= 4) {
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 1; i + 2 < points.length; i += 3) {
@@ -118,13 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
           points[i + 1].x, points[i + 1].y,
           points[i + 2].x, points[i + 2].y
         );
-      }
-      // Line to remaining points if any
-      const remainder = points.length % 3;
-      if (remainder !== 1) {
-        for (let j = points.length - remainder; j < points.length; j++) {
-          ctx.lineTo(points[j].x, points[j].y);
-        }
       }
       ctx.strokeStyle = '#007BFF';
       ctx.lineWidth = 2;
