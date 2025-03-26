@@ -1,4 +1,4 @@
-// Creative Mode Script
+// Creative Mode Script with Even Subdivision for Adding Points
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('curveEditor');
@@ -35,21 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
   controls.style.gap = "10px";
   document.body.appendChild(controls);
 
-  const removeBtn = document.createElement("button");
-  removeBtn.textContent = "-";
-  removeBtn.style.width = "40px";
-  removeBtn.style.height = "40px";
-  removeBtn.style.background = "black";
-  removeBtn.style.color = "white";
-  removeBtn.style.fontSize = "24px";
-  removeBtn.style.fontWeight = "bold";
-  removeBtn.onclick = () => {
-    if (points.length > 3) {
-      points.splice(points.length - 3, 3);
-      drawCurve();
-    }
-  };
-
   const addBtn = document.createElement("button");
   addBtn.textContent = "+";
   addBtn.style.width = "40px";
@@ -60,15 +45,34 @@ document.addEventListener('DOMContentLoaded', () => {
   addBtn.style.fontWeight = "bold";
   addBtn.onclick = () => {
     if (points.length + 3 <= 60) {
-      for (let i = 0; i < 3; i++) {
-        const last = points[points.length - 1];
-        const secondLast = points[points.length - 2];
-        const newPoint = {
-          x: (last.x + secondLast.x) / 2 + Math.random() * 30 - 15,
-          y: (last.y + secondLast.y) / 2 + Math.random() * 30 - 15
+      const newPoints = [];
+      for (let i = 0; i < points.length - 1; i++) {
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        const mid = {
+          x: (p1.x + p2.x) / 2,
+          y: (p1.y + p2.y) / 2
         };
-        points.splice(points.length - 1, 0, newPoint);
+        newPoints.push(p1);
+        newPoints.push(mid);
       }
+      newPoints.push(points[points.length - 1]);
+      points = newPoints.slice(0, 60); // Cap at 60
+      drawCurve();
+    }
+  };
+
+  const removeBtn = document.createElement("button");
+  removeBtn.textContent = "-";
+  removeBtn.style.width = "40px";
+  removeBtn.style.height = "40px";
+  removeBtn.style.background = "black";
+  removeBtn.style.color = "white";
+  removeBtn.style.fontSize = "24px";
+  removeBtn.style.fontWeight = "bold";
+  removeBtn.onclick = () => {
+    if (points.length > 3) {
+      points = points.filter((_, i) => i % 2 === 0);
       drawCurve();
     }
   };
@@ -110,8 +114,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     ctx.stroke();
 
-    // Blue Bézier curve
-    if (points.length >= 4) {
+    // Blue Curve
+    if (points.length === 3) {
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
+      ctx.strokeStyle = '#007BFF';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    } else if (points.length >= 4) {
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
       for (let i = 1; i + 2 < points.length; i += 3) {
