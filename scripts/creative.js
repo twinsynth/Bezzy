@@ -1,4 +1,4 @@
-// Creative Mode Script with Even Subdivision for Adding Points
+// Creative Mode Script with Flexible Point Subdivision and Quadratic Curve Fallback
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('curveEditor');
@@ -35,33 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
   controls.style.gap = "10px";
   document.body.appendChild(controls);
 
-  const addBtn = document.createElement("button");
-  addBtn.textContent = "+";
-  addBtn.style.width = "40px";
-  addBtn.style.height = "40px";
-  addBtn.style.background = "black";
-  addBtn.style.color = "white";
-  addBtn.style.fontSize = "24px";
-  addBtn.style.fontWeight = "bold";
-  addBtn.onclick = () => {
-    if (points.length + 3 <= 60) {
-      const newPoints = [];
-      for (let i = 0; i < points.length - 1; i++) {
-        const p1 = points[i];
-        const p2 = points[i + 1];
-        const mid = {
-          x: (p1.x + p2.x) / 2,
-          y: (p1.y + p2.y) / 2
-        };
-        newPoints.push(p1);
-        newPoints.push(mid);
-      }
-      newPoints.push(points[points.length - 1]);
-      points = newPoints.slice(0, 60); // Cap at 60
-      drawCurve();
-    }
-  };
-
   const removeBtn = document.createElement("button");
   removeBtn.textContent = "-";
   removeBtn.style.width = "40px";
@@ -73,6 +46,33 @@ document.addEventListener('DOMContentLoaded', () => {
   removeBtn.onclick = () => {
     if (points.length > 3) {
       points = points.filter((_, i) => i % 2 === 0);
+      drawCurve();
+    }
+  };
+
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "+";
+  addBtn.style.width = "40px";
+  addBtn.style.height = "40px";
+  addBtn.style.background = "black";
+  addBtn.style.color = "white";
+  addBtn.style.fontSize = "24px";
+  addBtn.style.fontWeight = "bold";
+  addBtn.onclick = () => {
+    if (points.length + 1 < 60) {
+      const newPoints = [];
+      for (let i = 0; i < points.length - 1; i++) {
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        const mid = {
+          x: (p1.x + p2.x) / 2,
+          y: (p1.y + p2.y) / 2
+        };
+        newPoints.push(p1);
+        if (newPoints.length < 60) newPoints.push(mid);
+      }
+      newPoints.push(points[points.length - 1]);
+      points = newPoints.slice(0, 60);
       drawCurve();
     }
   };
@@ -122,15 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.strokeStyle = '#007BFF';
       ctx.lineWidth = 2;
       ctx.stroke();
-    } else if (points.length >= 4) {
+    } else if (points.length > 3) {
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i + 2 < points.length; i += 3) {
-        ctx.bezierCurveTo(
-          points[i].x, points[i].y,
-          points[i + 1].x, points[i + 1].y,
-          points[i + 2].x, points[i + 2].y
-        );
+      for (let i = 1; i + 2 < points.length; i += 2) {
+        const cp = points[i];
+        const end = points[i + 1];
+        ctx.quadraticCurveTo(cp.x, cp.y, end.x, end.y);
       }
       ctx.strokeStyle = '#007BFF';
       ctx.lineWidth = 2;
