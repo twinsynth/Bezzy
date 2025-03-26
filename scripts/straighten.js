@@ -147,56 +147,77 @@ document.addEventListener('DOMContentLoaded', () => {
      const straightness = (straightLineDistance / totalDistance) * 100;
      return straightness >= 99 ? 100 : Math.round(straightness);
    }
- 
+
+
+
+   
+
+   
    function drawCurve() {
-     ctx.clearRect(0, 0, canvas.width, canvas.height);
- 
-     const maxOpacity = 1;
-     const fadePerLevel = 0.02;
-     const minOpacity = 0.02;
-     const currentOpacity = Math.max(maxOpacity - ((stage - 1) * fadePerLevel), minOpacity);
-     ctx.beginPath();
-     ctx.strokeStyle = `rgba(170, 170, 170, ${currentOpacity})`;
-     points.forEach((p, i) => {
-       if (i > 0) {
-         ctx.moveTo(points[i - 1].x, points[i - 1].y);
-         ctx.lineTo(p.x, p.y);
-       }
-     });
-     ctx.stroke();
- 
-     ctx.beginPath();
-     ctx.moveTo(points[0].x, points[0].y);
-     if (points.length >= 4) {
-       ctx.bezierCurveTo(points[0].x, points[0].y, points[1].x, points[1].y, points[2].x, points[2].y);
-     }
-     for (let i = 3; i < points.length - 2; i += 3) {
-       ctx.bezierCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, points[i + 2].x, points[i + 2].y);
-     }
-     if (points.length % 3 !== 1) {
-       const last = points.length - 1;
-       ctx.lineTo(points[last].x, points[last].y);
-     }
-     ctx.strokeStyle = '#007BFF';
-     ctx.lineWidth = 2;
-     ctx.stroke();
- 
-     points.forEach((point) => {
-       ctx.beginPath();
-       ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-       ctx.fillStyle = 'lightgray';
-       ctx.fill();
-     });
- 
-     const straightness = calculateStraightness();
-     straightnessDisplay.textContent = `${straightness}%`;
- 
-     if (straightness === 100 && clearedOverlay.style.display === "none") {
-       clearInterval(timer);
-       clearedOverlay.style.display = "flex";
-     }
-   }
- 
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const maxOpacity = 1;
+  const fadePerLevel = 0.02;
+  const minOpacity = 0.02;
+  const currentOpacity = Math.max(maxOpacity - ((stage - 1) * fadePerLevel), minOpacity);
+
+  ctx.beginPath();
+  ctx.strokeStyle = `rgba(170, 170, 170, ${currentOpacity})`;
+  points.forEach((p, i) => {
+    if (i > 0) {
+      ctx.moveTo(points[i - 1].x, points[i - 1].y);
+      ctx.lineTo(p.x, p.y);
+    }
+  });
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  if (points.length >= 4) {
+    ctx.bezierCurveTo(points[0].x, points[0].y, points[1].x, points[1].y, points[2].x, points[2].y);
+  }
+  for (let i = 3; i < points.length - 2; i += 3) {
+    ctx.bezierCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, points[i + 2].x, points[i + 2].y);
+  }
+  if (points.length % 3 !== 1) {
+    const last = points.length - 1;
+    ctx.lineTo(points[last].x, points[last].y);
+  }
+  ctx.strokeStyle = '#007BFF';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  points.forEach((point) => {
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'lightgray';
+    ctx.fill();
+  });
+
+  const straightness = calculateStraightness();
+  straightnessDisplay.textContent = `${straightness}%`;
+
+  if (straightness === 100 && clearedOverlay.style.display === "none") {
+    clearInterval(timer);
+    clearedOverlay.style.display = "flex";
+
+    // SCORE ANIMATION
+    const timeBonus = 60 - timeLeft;
+    const finalScore = score + 100 + timeBonus;
+
+    // Call the reusable score animation
+    animateScore(score, finalScore, "scoreCounter", 1000, () => {
+      score = finalScore;
+      updateUI();
+    });
+  }
+}
+
+
+
+
+
+   
    function startTimer() {
      timeLeft = 60;
      timerDisplay.textContent = timeLeft;
