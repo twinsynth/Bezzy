@@ -44,9 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
   removeBtn.style.fontSize = "24px";
   removeBtn.style.fontWeight = "bold";
   removeBtn.onclick = () => {
-    if (points.length > 3) {
-      points = points.filter((_, i) => i % 2 === 0);
-      drawCurve();
+    if (points.length > 4) {
+      generateEvenPoints(points.length - 2);
     }
   };
 
@@ -59,45 +58,25 @@ document.addEventListener('DOMContentLoaded', () => {
   addBtn.style.fontSize = "24px";
   addBtn.style.fontWeight = "bold";
   addBtn.onclick = () => {
-    if (points.length + 1 < 60) {
-      const newPoints = [];
-      for (let i = 0; i < points.length - 1; i++) {
-        const p1 = points[i];
-        const p2 = points[i + 1];
-        const mid = {
-          x: (p1.x + p2.x) / 2,
-          y: (p1.y + p2.y) / 2
-        };
-        newPoints.push(p1);
-        if (newPoints.length < 60) newPoints.push(mid);
-      }
-      newPoints.push(points[points.length - 1]);
-      points = newPoints.slice(0, 60);
-      drawCurve();
+    if (points.length + 2 <= 61) {
+      generateEvenPoints(points.length + 2);
     }
   };
 
   controls.appendChild(removeBtn);
   controls.appendChild(addBtn);
 
-  function getSafeRandom(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  function randomizePoints(count) {
+  function generateEvenPoints(count) {
+    const padding = 80;
     points = [];
-    const margin = 0.15;
-    const safeWidth = canvas.width * (1 - 2 * margin);
-    const safeHeight = canvas.height * (1 - 2 * margin);
-    const xOffset = canvas.width * margin;
-    const yOffset = canvas.height * margin;
-
+    const spacing = (canvas.width - 2 * padding) / (count - 1);
     for (let i = 0; i < count; i++) {
       points.push({
-        x: getSafeRandom(xOffset, xOffset + safeWidth),
-        y: getSafeRandom(yOffset, yOffset + safeHeight)
+        x: padding + i * spacing,
+        y: canvas.height / 2 + Math.sin(i) * 100
       });
     }
+    drawCurve();
   }
 
   function drawCurve() {
@@ -115,17 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.stroke();
 
     // Blue Curve
-    if (points.length === 3) {
+    if (points.length >= 3) {
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
-      ctx.quadraticCurveTo(points[1].x, points[1].y, points[2].x, points[2].y);
-      ctx.strokeStyle = '#007BFF';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-    } else if (points.length > 3) {
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for (let i = 1; i + 2 < points.length; i += 2) {
+      for (let i = 1; i + 1 < points.length; i += 2) {
         const cp = points[i];
         const end = points[i + 1];
         ctx.quadraticCurveTo(cp.x, cp.y, end.x, end.y);
@@ -167,8 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     draggedPointIndex = null;
   }
 
-  randomizePoints(3);
-  drawCurve();
+  generateEvenPoints(4);
 
   canvas.addEventListener('mousedown', startDrag);
   canvas.addEventListener('mousemove', moveDrag);
