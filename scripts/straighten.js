@@ -1,3 +1,6 @@
+import { animateScore } from './scoreAnimator.js';
+
+
 document.addEventListener('DOMContentLoaded', () => {
    const canvas = document.getElementById('curveEditor');
    const ctx = canvas.getContext('2d');
@@ -70,7 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
    clearedOverlay.style.color = "white";
    clearedOverlay.style.fontSize = "32px";
    clearedOverlay.style.fontWeight = "bold";
+
+   
    clearedOverlay.innerHTML = `
+   <div id="scoreCounter" style="font-size: 48px; font-weight: bold; margin-bottom: 20px;">0</div>
      <p>CLEARED!</p>
      <button id="nextLevelButton">
        <img src="../assets/Next.svg" alt="Next">
