@@ -287,8 +287,12 @@ animateScore();
      drawCurve();
    };
  
-   startButton.onclick = startGame;
-   restartButton.onclick = startGame;
+   startButton.addEventListener('click', startGame);
+startButton.addEventListener('touchstart', startGame);
+
+restartButton.addEventListener('click', startGame);
+restartButton.addEventListener('touchstart', startGame);
+
    document.getElementById("overlayRestart").onclick = startGame;
  
    canvas.addEventListener('mousedown', startDrag);
