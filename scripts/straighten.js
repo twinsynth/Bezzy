@@ -18,22 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
    timerDisplay.style.zIndex = "1000";
    timerDisplay.textContent = "60";
    document.body.appendChild(timerDisplay);
- 
- 
- // Create Home Button
- const homeButton = document.createElement("button");
- homeButton.id = "homeButton";
- homeButton.innerHTML = `<img src="../assets/Home.svg" alt="Home">`;
- homeButton.onclick = () => window.location.href = "../index.html";
- document.body.appendChild(homeButton);
- 
- // Apply ID for timer styling
- timerDisplay.id = "timerDisplay";
- 
- 
- 
+
+   // Create Home Button
+   const homeButton = document.createElement("button");
+   homeButton.id = "homeButton";
+   homeButton.innerHTML = `<img src="../assets/Home.svg" alt="Home">`;
+   homeButton.onclick = () => window.location.href = "../index.html";
+   document.body.appendChild(homeButton);
+
+   // Apply ID for timer styling
+   timerDisplay.id = "timerDisplay";
    
- 
    const gameOverOverlay = document.createElement("div");
    gameOverOverlay.style.position = "fixed";
    gameOverOverlay.style.top = "0";
@@ -55,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
      </button>
    `;
    document.body.appendChild(gameOverOverlay);
- 
+
    const clearedOverlay = document.createElement("div");
    clearedOverlay.style.position = "fixed";
    clearedOverlay.style.top = "0";
@@ -71,11 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
    clearedOverlay.style.fontSize = "32px";
    clearedOverlay.style.fontWeight = "bold";
    clearedOverlay.innerHTML = `
-
-
-
-   <div id="scoreCounter" style="font-size: 48px; font-weight: bold; margin-bottom: 20px;">${score}</div>
-
+     <div id="scoreCounter" style="font-size: 48px; font-weight: bold; margin-bottom: 20px;">${score}</div>
      <p>CLEARED!</p>
      <button id="nextLevelButton">
        <img src="../assets/Next.svg" alt="Next">
@@ -83,40 +74,33 @@ document.addEventListener('DOMContentLoaded', () => {
    `;
    document.body.appendChild(clearedOverlay);
 
-// Animate score when cleared
-let counter = score; // Get the current score
-const scoreElement = document.getElementById("scoreCounter");
-let start = performance.now();
+   // Animate score when cleared
+   let counter = score; // Get the current score
+   const scoreElement = document.getElementById("scoreCounter");
+   let start = performance.now();
 
-function animateScore() {
-  const progress = (performance.now() - start) / 2000; // 2-second animation
-  scoreElement.textContent = Math.floor(counter + progress * (score - counter));
-  if (progress < 1) {
-    requestAnimationFrame(animateScore);
-  }
-}
+   function animateScore() {
+     const progress = (performance.now() - start) / 2000; // 2-second animation
+     scoreElement.textContent = Math.floor(counter + progress * (score - counter));
+     if (progress < 1) {
+       requestAnimationFrame(animateScore);
+     }
+   }
 
-animateScore();
+   animateScore();
 
-
-
-   
- 
- document.getElementById("nextLevelButton").onclick = () => {
-   clearedOverlay.style.display = "none";
-   const timeBonus = 60 - timeLeft;
-   score += 100 + timeBonus;
-   stage++;
-   timeLeft = 60;
-   updateUI();
-   randomizePoints(12);
-   draggedPointIndex = null;
-   startTimer();
-   drawCurve();
- };
- 
- 
- 
+   document.getElementById("nextLevelButton").onclick = () => {
+     clearedOverlay.style.display = "none";
+     const timeBonus = 60 - timeLeft;
+     score += 100 + timeBonus;
+     stage++;
+     timeLeft = 60;
+     updateUI();
+     randomizePoints(12);
+     draggedPointIndex = null;
+     startTimer();
+     drawCurve();
+   };
  
    canvas.style.width = "100vw";
    canvas.style.height = "100vh";
@@ -188,7 +172,7 @@ animateScore();
      if (points.length >= 4) {
        ctx.bezierCurveTo(points[0].x, points[0].y, points[1].x, points[1].y, points[2].x, points[2].y);
      }
-     for (let i = 3; i < points.length - 2; i += 3) {
+     for (let i = 3; i < points.length - 2; i++) {
        ctx.bezierCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, points[i + 2].x, points[i + 2].y);
      }
      if (points.length % 3 !== 1) {
@@ -274,27 +258,14 @@ animateScore();
      drawCurve();
    }
  
-   document.getElementById("nextLevelButton").onclick = () => {
-     clearedOverlay.style.display = "none";
-     const timeBonus = 60 - timeLeft;
-     score += 100 + timeBonus;
-     stage++;
-     timeLeft = 60;
-     updateUI();
-     randomizePoints(12);
-     draggedPointIndex = null;
-     startTimer();
-     drawCurve();
-   };
- 
    startButton.addEventListener('click', startGame);
-startButton.addEventListener('touchstart', startGame);
+   startButton.addEventListener('touchstart', startGame);
 
-restartButton.addEventListener('click', startGame);
-restartButton.addEventListener('touchstart', startGame);
+   restartButton.addEventListener('click', startGame);
+   restartButton.addEventListener('touchstart', startGame);
 
    document.getElementById("overlayRestart").onclick = startGame;
- 
+
    canvas.addEventListener('mousedown', startDrag);
    canvas.addEventListener('mousemove', moveDrag);
    canvas.addEventListener('mouseup', stopDrag);
