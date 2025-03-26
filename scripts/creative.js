@@ -1,4 +1,4 @@
-// Creative Mode Script with Flexible Point Subdivision and Quadratic Curve Fallback
+// Creative Mode Script with Quadratic Bézier support and consistent pairs
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('curveEditor');
@@ -44,8 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
   removeBtn.style.fontSize = "24px";
   removeBtn.style.fontWeight = "bold";
   removeBtn.onclick = () => {
-    if (points.length > 4) {
-      generateEvenPoints(points.length - 2);
+    if (points.length > 5) {
+      generateCreativePoints(points.length - 2);
     }
   };
 
@@ -59,14 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
   addBtn.style.fontWeight = "bold";
   addBtn.onclick = () => {
     if (points.length + 2 <= 61) {
-      generateEvenPoints(points.length + 2);
+      generateCreativePoints(points.length + 2);
     }
   };
 
   controls.appendChild(removeBtn);
   controls.appendChild(addBtn);
 
-  function generateEvenPoints(count) {
+  function generateCreativePoints(count) {
+    // Ensure count is odd so we get complete control-end pairs after moveTo
+    if (count % 2 === 0) count++;
     const padding = 80;
     points = [];
     const spacing = (canvas.width - 2 * padding) / (count - 1);
@@ -93,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     ctx.stroke();
 
-    // Blue Curve
+    // Blue Curve (Quadratic)
     if (points.length >= 3) {
       ctx.beginPath();
       ctx.moveTo(points[0].x, points[0].y);
@@ -139,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     draggedPointIndex = null;
   }
 
-  generateEvenPoints(4);
+  generateCreativePoints(5);
 
   canvas.addEventListener('mousedown', startDrag);
   canvas.addEventListener('mousemove', moveDrag);
