@@ -35,21 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
   controls.style.gap = "10px";
   document.body.appendChild(controls);
 
-  const removeBtn = document.createElement("button");
-  removeBtn.textContent = "-";
-  removeBtn.style.width = "40px";
-  removeBtn.style.height = "40px";
-  removeBtn.style.background = "black";
-  removeBtn.style.color = "white";
-  removeBtn.style.fontSize = "24px";
-  removeBtn.style.fontWeight = "bold";
-  removeBtn.onclick = () => {
-    if (points.length > 3) {
-      points.splice(points.length - 2, 1); // remove before last point
-      drawCurve();
-    }
-  };
-
   const addBtn = document.createElement("button");
   addBtn.textContent = "+";
   addBtn.style.width = "40px";
@@ -67,6 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
         y: (last.y + secondLast.y) / 2 + Math.random() * 30 - 15
       };
       points.splice(points.length - 1, 0, newPoint);
+      drawCurve();
+    }
+  };
+
+  const removeBtn = document.createElement("button");
+  removeBtn.textContent = "-";
+  removeBtn.style.width = "40px";
+  removeBtn.style.height = "40px";
+  removeBtn.style.background = "black";
+  removeBtn.style.color = "white";
+  removeBtn.style.fontSize = "24px";
+  removeBtn.style.fontWeight = "bold";
+  removeBtn.onclick = () => {
+    if (points.length > 3) {
+      points.splice(points.length - 2, 1);
       drawCurve();
     }
   };
@@ -109,21 +109,27 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.stroke();
 
     // Blue Bézier curve
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    if (points.length >= 4) {
-      ctx.bezierCurveTo(points[0].x, points[0].y, points[1].x, points[1].y, points[2].x, points[2].y);
+    if (points.length >= 2) {
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i + 2 < points.length; i += 3) {
+        ctx.bezierCurveTo(
+          points[i].x, points[i].y,
+          points[i + 1].x, points[i + 1].y,
+          points[i + 2].x, points[i + 2].y
+        );
+      }
+      // Line to remaining points if any
+      const remainder = points.length % 3;
+      if (remainder !== 1) {
+        for (let j = points.length - remainder; j < points.length; j++) {
+          ctx.lineTo(points[j].x, points[j].y);
+        }
+      }
+      ctx.strokeStyle = '#007BFF';
+      ctx.lineWidth = 2;
+      ctx.stroke();
     }
-    for (let i = 3; i < points.length - 2; i += 3) {
-      ctx.bezierCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, points[i + 2].x, points[i + 2].y);
-    }
-    if (points.length % 3 !== 1) {
-      const last = points.length - 1;
-      ctx.lineTo(points[last].x, points[last].y);
-    }
-    ctx.strokeStyle = '#007BFF';
-    ctx.lineWidth = 2;
-    ctx.stroke();
 
     // Draw control points
     points.forEach((point) => {
