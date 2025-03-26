@@ -1,53 +1,41 @@
 // creative.js
 
-// DOM references
-const canvas = document.getElementById('curveEditor');
-const ctx = canvas.getContext('2d');
-const restartButton = document.getElementById('menuButton');
-const addPointButton = document.getElementById('addPoint');
-const removePointButton = document.getElementById('removePoint');
+const canvas = document.getElementById("curveEditor");
+const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const radius = 8;
 const touchRadius = 15;
-let draggedPointIndex = null;
 let points = [];
-const minPoints = 3;
-const maxPoints = 30;
+let draggedPointIndex = null;
 
-function getPointerPosition(event) {
-  return event.touches
-    ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
-    : { x: event.clientX, y: event.clientY };
+function getSafeRandom(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
-function randomPoint() {
-  return {
-    x: Math.random() * canvas.width * 0.8 + canvas.width * 0.1,
-    y: Math.random() * canvas.height * 0.8 + canvas.height * 0.1,
-  };
+function isMobile() {
+  return window.innerWidth <= 768;
 }
 
 function initPoints(count = 3) {
+  const safeMargin = isMobile() ? 0.15 : 0.1;
+  const safeWidth = canvas.width * (1 - 2 * safeMargin);
+  const safeHeight = canvas.height * (1 - 2 * safeMargin);
+  const xOffset = canvas.width * safeMargin;
+  const yOffset = canvas.height * safeMargin;
   points = [];
   for (let i = 0; i < count; i++) {
-    points.push(randomPoint());
+    points.push({
+      x: getSafeRandom(xOffset, xOffset + safeWidth),
+      y: getSafeRandom(yOffset, yOffset + safeHeight),
+    });
   }
-  drawCurve();
 }
 
 function drawCurve() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.beginPath();
-  ctx.strokeStyle = 'rgba(170, 170, 170, 0.4)';
-  for (let i = 1; i < points.length; i++) {
-    ctx.moveTo(points[i - 1].x, points[i - 1].y);
-    ctx.lineTo(points[i].x, points[i].y);
-  }
-  ctx.stroke();
 
   ctx.beginPath();
   ctx.moveTo(points[0].x, points[0].y);
@@ -58,26 +46,29 @@ function drawCurve() {
     ctx.bezierCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y, points[i + 2].x, points[i + 2].y);
   }
   if (points.length % 3 !== 1) {
-    ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+    const last = points.length - 1;
+    ctx.lineTo(points[last].x, points[last].y);
   }
-  ctx.strokeStyle = '#FFFFFF';
+  ctx.strokeStyle = '#007BFF';
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  points.forEach((p) => {
+  points.forEach((point) => {
     ctx.beginPath();
-    ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
     ctx.fillStyle = 'lightgray';
     ctx.fill();
   });
 }
 
+function getPointerPosition(event) {
+  return event.touches ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : { x: event.clientX, y: event.clientY };
+}
+
 function startDrag(event) {
   const rect = canvas.getBoundingClientRect();
   const { x, y } = getPointerPosition(event);
-  draggedPointIndex = points.findIndex(
-    (p) => Math.hypot(p.x - (x - rect.left), p.y - (y - rect.top)) < touchRadius
-  );
+  draggedPointIndex = points.findIndex((p) => Math.hypot(p.x - (x - rect.left), p.y - (y - rect.top)) < touchRadius);
 }
 
 function moveDrag(event) {
@@ -93,29 +84,55 @@ function stopDrag() {
   draggedPointIndex = null;
 }
 
-function addPoint() {
-  if (points.length >= maxPoints) return;
-  const insertIndex = Math.floor(points.length / 2);
-  points.splice(insertIndex, 0, randomPoint());
-  drawCurve();
+function createControlButtons() {
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "+";
+  addBtn.style.cssText = "position: fixed; top: 20px; left: 50%; transform: translateX(-60px); z-index: 1001; width: 40px; height: 40px; background: black; color: white; font-size: 24px;";
+  document.body.appendChild(addBtn);
+
+  const removeBtn = document.createElement("button");
+  removeBtn.textContent = "-";
+  removeBtn.style.cssText = "position: fixed; top: 20px; left: 50%; transform: translateX(20px); z-index: 1001; width: 40px; height: 40px; background: black; color: white; font-size: 24px;";
+  document.body.appendChild(removeBtn);
+
+  addBtn.onclick = () => {
+    if (points.length < 30) {
+      const midIndex = Math.floor(points.length / 2);
+      const midPoint = {
+        x: (points[midIndex].x + points[midIndex + 1].x) / 2,
+        y: (points[midIndex].y + points[midIndex + 1].y) / 2,
+      };
+      points.splice(midIndex + 1, 0, midPoint);
+      drawCurve();
+    }
+  };
+
+  removeBtn.onclick = () => {
+    if (points.length > 3) {
+      const midIndex = Math.floor(points.length / 2);
+      points.splice(midIndex, 1);
+      drawCurve();
+    }
+  };
 }
 
-function removePoint() {
-  if (points.length <= minPoints) return;
-  const removeIndex = Math.floor(points.length / 2);
-  points.splice(removeIndex, 1);
-  drawCurve();
-}
-
-restartButton.onclick = () => window.location.href = '../index.html';
-addPointButton.onclick = addPoint;
-removePointButton.onclick = removePoint;
-
-canvas.addEventListener('mousedown', startDrag);
-canvas.addEventListener('mousemove', moveDrag);
-canvas.addEventListener('mouseup', stopDrag);
-canvas.addEventListener('touchstart', startDrag, { passive: false });
-canvas.addEventListener('touchmove', moveDrag, { passive: false });
-canvas.addEventListener('touchend', stopDrag);
+const menuButton = document.createElement("button");
+menuButton.id = "menuButton";
+menuButton.innerHTML = `<img src="../assets/Menu.svg" alt="Menu">`;
+menuButton.style.position = "fixed";
+menuButton.style.top = "20px";
+menuButton.style.right = "20px";
+menuButton.style.zIndex = "1001";
+menuButton.onclick = () => window.location.href = "../index.html";
+document.body.appendChild(menuButton);
 
 initPoints();
+drawCurve();
+createControlButtons();
+
+canvas.addEventListener("mousedown", startDrag);
+canvas.addEventListener("mousemove", moveDrag);
+canvas.addEventListener("mouseup", stopDrag);
+canvas.addEventListener("touchstart", startDrag, { passive: false });
+canvas.addEventListener("touchmove", moveDrag, { passive: false });
+canvas.addEventListener("touchend", stopDrag);
